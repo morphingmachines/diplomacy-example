@@ -11,19 +11,21 @@ Make sure that you have a working [playground](https://github.com/morphingmachin
 
 ## Generating Verilog
 
-Verilog code can be generated from Chisel by using the `chisel` Makefile target.
+Verilog code can be generated from Chisel by using the `rtl` Makefile target.
 
 ```sh
 make rtl
 ```
 
-The output verilog files are generated in the `./generated` directory.
+The output verilog files are generated in the `./generated_sv_dir` directory.
 
 Running tests can be done with:
 
 ```sh
 make test
 ```
+
+The output VCD files are dumped in the `./test_run_dir` directory.
 
 More targets can be listed by running `make`.
 
