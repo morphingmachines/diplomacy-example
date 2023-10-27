@@ -1,10 +1,9 @@
 package adder
 
 import chiseltest._
-import org.scalatest.freespec.AnyFreeSpec
-
 import freechips.rocketchip.diplomacy.LazyModule
 import org.chipsalliance.cde.config.Parameters
+import org.scalatest.freespec.AnyFreeSpec
 
 /** This is a trivial example of how to run this Specification: From a terminal shell use:
   * {{{
@@ -20,7 +19,7 @@ class DiplomaticAdder extends AnyFreeSpec with ChiselScalatestTester {
         VerilatorBackendAnnotation, // Uncomment to use the Verilator backend
       ),
     ) { dut =>
-        dut.clock.step(10)
+      dut.clock.step(10)
 
     }
   }

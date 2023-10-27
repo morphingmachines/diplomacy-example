@@ -3,6 +3,6 @@
         "**/target": true,
         "**/out": true,
         "**/test_run_dir": true,
-        "**/generated_sv_dir": true,
+        "**/generated_sv_dir": true
     }
 }

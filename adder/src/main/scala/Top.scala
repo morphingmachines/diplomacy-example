@@ -2,6 +2,7 @@ package adder
 
 import circt.stage.ChiselStage
 import freechips.rocketchip.diplomacy.LazyModule
+import freechips.rocketchip.util.ElaborationArtefacts
 import org.chipsalliance.cde.config.Parameters
 
 import java.io._
@@ -28,10 +29,10 @@ trait Toplevel {
   */
 object diplomacyExample extends App with Toplevel {
 
-  val str_firrtl = ChiselStage.emitCHIRRTL(
-    LazyModule(new AdderTestHarness()(Parameters.empty)).module,
-    args = Array("--full-stacktrace"),
-  )
+  private val ldut: AdderTestHarness = LazyModule(new AdderTestHarness()(Parameters.empty))
+
+  val str_firrtl = ChiselStage.emitCHIRRTL(ldut.module, args = Array("--full-stacktrace"))
+  ElaborationArtefacts.add("graphml", ldut.graphML)
   Files.createDirectories(Paths.get("generated_sv_dir"))
   val pw = new PrintWriter(new File(s"${generated_sv_dir}.fir"))
   pw.write(str_firrtl)
@@ -45,5 +46,11 @@ object diplomacyExample extends App with Toplevel {
     s"-o=${generated_sv_dir}",
     s"--output-annotation-file=${generated_sv_dir}/DecoupledGcd.anno.json",
   ).call() // check additional options with "firtool --help"
+
+  ElaborationArtefacts.files.foreach { case ("graphml", graphML) =>
+    val fw = new FileWriter(new File(s"${generated_sv_dir}", "AdderTestBench.graphml"))
+    fw.write(graphML())
+    fw.close()
+  }
 
 }
