@@ -17,9 +17,10 @@ Verilog code can be generated from Chisel by using the `rtl` Makefile target.
 make rtl
 ```
 
-The output verilog files are generated in the `./generated_sv_dir` directory.
+The output verilog files are generated in the `./generated_sv_dir` directory. This also generates a `graphml` file that visualizes the diplomacy graph of different components in the system. To view `graphml` file, as shown below, use [yEd](https://askubuntu.com/a/504178). 
 
-Running tests can be done with:
+![diplomacy_graph](./doc/figures/AdderTestHarness.jpg)
+### Run tests
 
 ```sh
 make test
