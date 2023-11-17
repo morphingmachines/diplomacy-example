@@ -42,7 +42,7 @@ cleanall: clean  ## Clean all downloaded dependencies and cache
 	@rm -rf project/.bloop
 	@rm -rf project/project
 	@rm -rf project/target
-	@rm -rf .bloop .bsp .metals .vscode
+	@rm -rf .bloop .bsp .metals 
 
 .PHONY: help
 help:

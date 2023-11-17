@@ -16,33 +16,37 @@ import $file.^.playground.build
 import $file.^.playground.dependencies.cde.build
 import $file.^.playground.dependencies.`rocket-chip`.common
 
+object ivys {
+  val cv = ^.playground.build.ivys.cv
+  // val cv = "5.1.0"
+}
 
 object macros extends ^.playground.dependencies.`rocket-chip`.common.MacrosModule with SbtModule {
-  override def millSourcePath = os.pwd / os.up / "playground" /"dependencies" / "rocket-chip" / "macros"
-	def scalaVersion: T[String] = T(^.playground.build.ivys.sv)
-	def scalaReflectIvy = ^.playground.build.ivys.scalaReflect
+  override def millSourcePath = os.pwd / os.up / "playground" / "dependencies" / "rocket-chip" / "macros"
+  def scalaVersion: T[String] = T(^.playground.build.ivys.sv)
+  def scalaReflectIvy = ^.playground.build.ivys.scalaReflect
 }
 
 object mycde extends ^.playground.dependencies.cde.build.CDE with PublishModule {
-  override def millSourcePath = os.pwd / os.up /"playground" / "dependencies" / "cde" / "cde"
+  override def millSourcePath = os.pwd / os.up / "playground" / "dependencies" / "cde" / "cde"
 }
 
-object myrocketchip extends ^.playground.dependencies.`rocket-chip`.common.RocketChipModule with SbtModule{
+object myrocketchip extends ^.playground.dependencies.`rocket-chip`.common.RocketChipModule with SbtModule {
 
   override def millSourcePath = os.pwd / os.up / "playground" / "dependencies" / "rocket-chip"
 
   override def scalaVersion = ^.playground.build.ivys.sv
 
   def chiselModule = None
-	
-  def chiselPluginJar = None		
 
-  def chiselIvy = Some(^.playground.build.ivys.chiselCrossVersions("5.0.0")._1)
+  def chiselPluginJar = None
 
-  def chiselPluginIvy = Some(^.playground.build.ivys.chiselCrossVersions("5.0.0")._2)
+  def chiselIvy = Some(^.playground.build.ivys.chiselCrossVersions(ivys.cv)._1)
 
-  override def ivyDeps = T(super.ivyDeps() ++ chiselIvy)
-  override def scalacPluginIvyDeps  = T(super.scalacPluginIvyDeps() ++ chiselPluginIvy)
+  def chiselPluginIvy = Some(^.playground.build.ivys.chiselCrossVersions(ivys.cv)._2)
+
+  override def ivyDeps             = T(super.ivyDeps() ++ chiselIvy)
+  override def scalacPluginIvyDeps = T(super.scalacPluginIvyDeps() ++ chiselPluginIvy)
 
   def macrosModule = macros
 
@@ -57,33 +61,36 @@ object myrocketchip extends ^.playground.dependencies.`rocket-chip`.common.Rocke
 }
 
 object inclusivecache extends ^.playground.build.CommonModule {
-  override def millSourcePath = os.pwd / os.up / "playground" /"dependencies" / "rocket-chip-inclusive-cache" / "design" / "craft" / "inclusivecache"
+  override def millSourcePath =
+    os.pwd / os.up / "playground" / "dependencies" / "rocket-chip-inclusive-cache" / "design" / "craft" / "inclusivecache"
   override def moduleDeps = super.moduleDeps ++ Seq(myrocketchip)
 }
 
 object blocks extends ^.playground.build.CommonModule with SbtModule {
   override def millSourcePath = os.pwd / os.up / "playground" / "dependencies" / "rocket-chip-blocks"
-  override def moduleDeps = super.moduleDeps ++ Seq(myrocketchip)
+  override def moduleDeps     = super.moduleDeps ++ Seq(myrocketchip)
 }
 
 object shells extends ^.playground.build.CommonModule with SbtModule {
   override def millSourcePath = os.pwd / os.up / "playground" / "dependencies" / "rocket-chip-fpga-shells"
-  override def moduleDeps = super.moduleDeps ++ Seq(myrocketchip, blocks)
+  override def moduleDeps     = super.moduleDeps ++ Seq(myrocketchip, blocks)
 }
 
 // UCB
 object myhardfloat extends ScalaModule with SbtModule with PublishModule {
   override def millSourcePath = os.pwd / os.up / "playground" / "dependencies" / "berkeley-hardfloat"
-  def scalaVersion = ^.playground.build.ivys.sv
+  def scalaVersion            = ^.playground.build.ivys.sv
 
-  def chiselIvy = Some(^.playground.build.ivys.chiselCrossVersions("5.0.0")._1)
+  def chiselIvy = Some(^.playground.build.ivys.chiselCrossVersions(ivys.cv)._1)
 
-  def chiselPluginIvy = Some(^.playground.build.ivys.chiselCrossVersions("5.0.0")._2)
+  def chiselPluginIvy = Some(^.playground.build.ivys.chiselCrossVersions(ivys.cv)._2)
 
-  override def ivyDeps = T(super.ivyDeps() ++ chiselIvy)
-  override def scalacPluginIvyDeps  = T(super.scalacPluginIvyDeps() ++ chiselPluginIvy)
+  override def ivyDeps             = T(super.ivyDeps() ++ chiselIvy)
+  override def scalacPluginIvyDeps = T(super.scalacPluginIvyDeps() ++ chiselPluginIvy)
   // remove test dep
-  override def allSourceFiles = T(super.allSourceFiles().filterNot(_.path.last.contains("Tester")).filterNot(_.path.segments.contains("test")))
+  override def allSourceFiles = T(
+    super.allSourceFiles().filterNot(_.path.last.contains("Tester")).filterNot(_.path.segments.contains("test")),
+  )
 
   def publishVersion = de.tobiasroeser.mill.vcs.version.VcsVersion.vcsState().format()
 
@@ -96,11 +103,10 @@ object myhardfloat extends ScalaModule with SbtModule with PublishModule {
     developers = Seq(
       Developer("jhauser-ucberkeley", "John Hauser", "https://www.colorado.edu/faculty/hauser/about/"),
       Developer("aswaterman", "Andrew Waterman", "https://aspire.eecs.berkeley.edu/author/waterman/"),
-      Developer("yunsup", "Yunsup Lee", "https://aspire.eecs.berkeley.edu/author/yunsup/")
-    )
+      Developer("yunsup", "Yunsup Lee", "https://aspire.eecs.berkeley.edu/author/yunsup/"),
+    ),
   )
 }
-
 
 trait ScalacOptions extends ScalaModule {
   override def scalacOptions = T {
@@ -117,20 +123,23 @@ trait ScalacOptions extends ScalaModule {
   }
 }
 
-  
 // Replace "adder" with your %PROJECT-NAME%
-object adder extends  ^.playground.build.CommonModule with SbtModule with ScalafmtModule with ScalafixModule with ScalacOptions {
+object adder
+  extends ^.playground.build.CommonModule
+  with SbtModule
+  with ScalafmtModule
+  with ScalafixModule
+  with ScalacOptions {
   override def millSourcePath = os.pwd / "adder"
 
   override def moduleDeps = super.moduleDeps ++ Seq(myrocketchip)
 
-  override def ivyDeps = super.ivyDeps() ++ Agg(
-    ^.playground.build.ivys.scalatest,  
-    ^.playground.build.ivys.chiseltestCrossVersions("5.0.0"),
-    ^.playground.build.ivys.oslib,
-  )
+  object test extends SbtModuleTests with ScalaTest with ScalafmtModule with ScalafixModule {
+    override def ivyDeps = super.ivyDeps() ++ Agg(
+      ^.playground.build.ivys.scalatest,
+      ^.playground.build.ivys.chiseltestCrossVersions(ivys.cv),
+      ^.playground.build.ivys.oslib,
+    )
 
-  object test extends ScalaTests with ScalaTest with ScalafmtModule with ScalafixModule {
-    override def sources = T.sources {Seq(PathRef(os.pwd/ "adder" /"src" / "test"))}
   }
 }
