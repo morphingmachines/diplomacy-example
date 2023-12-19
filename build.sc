@@ -18,7 +18,6 @@ import $file.^.playground.dependencies.`rocket-chip`.common
 
 object ivys {
   val cv = ^.playground.build.ivys.cv
-  // val cv = "5.1.0"
 }
 
 object macros extends ^.playground.dependencies.`rocket-chip`.common.MacrosModule with SbtModule {
@@ -130,7 +129,7 @@ object adder
   with ScalafmtModule
   with ScalafixModule
   with ScalacOptions {
-  override def millSourcePath = os.pwd / "adder"
+  override def millSourcePath = os.pwd
 
   override def moduleDeps = super.moduleDeps ++ Seq(myrocketchip)
 

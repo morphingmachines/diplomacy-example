@@ -7,7 +7,7 @@ MILL = ./mill
 
 # Targets
 rtl:## Generates Verilog code from Chisel sources (output to ./generated_sv_dir)
-	$(MILL) $(project).runMain adder.diplomacyExample
+	$(MILL) $(project).runMain adder.diplomacyExample example1
 
 check: test
 .PHONY: test
