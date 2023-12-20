@@ -4,5 +4,14 @@
         "**/out": true,
         "**/test_run_dir": true,
         "**/generated_sv_dir": true
-    }
+    },
+    "GitCommitPlugin.MaxSubjectCharacters": 50,
+    "GitCommitPlugin.Templates": [
+        {
+            "templateName": "git-mm",
+            "templateContent": "<icon><space><type>:<space><subject><enter><body><enter><footer>",
+            // Set as default commit template
+            "default": true
+        }
+    ]
 }

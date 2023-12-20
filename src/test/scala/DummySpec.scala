@@ -13,7 +13,11 @@ import org.scalatest.freespec.AnyFreeSpec
 class DiplomaticAdder extends AnyFreeSpec with ChiselScalatestTester {
 
   "Diplomatic Adder must properly negotiate the width parameter" in {
-    test(LazyModule(new example5.AdderTestHarness()(new Config(new example5.DiplomacyExampleConfig)) with example5.HasOneNodeMonitor).module).withAnnotations(
+    test(
+      LazyModule(
+        new example5.AdderTestHarness()(new Config(new example5.DiplomacyExampleConfig)) with example5.HasOneNodeMonitor,
+      ).module,
+    ).withAnnotations(
       Seq(
         WriteVcdAnnotation,
         VerilatorBackendAnnotation, // Uncomment to use the Verilator backend
