@@ -37,6 +37,24 @@ object AdderNodeImp extends SimpleNodeImp[DownwardParam, UpwardParam, EdgeParam,
 
 class AdderDriverNode(widths: Seq[DownwardParam])(implicit valName: ValName) extends SourceNode(AdderNodeImp)(widths)
 
+/*
+
+/* This MonitorNodeImp make data-width negotiation incompatible with Driver and Adder nodes, as this selects the maximum of the widths.
+ * This will still generate
+ * RTL but breaks the functional correctness.
+ */
+object MonitorNodeImp extends SimpleNodeImp[DownwardParam, UpwardParam, EdgeParam, DecoupledIO[UInt]] {
+  def edge(pd: DownwardParam, pu: UpwardParam, p: Parameters, sourceInfo: SourceInfo) =
+    if (pd.width < pu.width) EdgeParam(pu.width) else EdgeParam(pd.width)
+
+  def bundle(e: EdgeParam): DecoupledIO[UInt] = Decoupled(UInt(e.width.W))
+
+  override def render(e: EdgeParam): RenderedEdge = RenderedEdge("blue", s"width=${e.width}")
+}
+
+class AdderMonitorNode(width: UpwardParam)(implicit valName: ValName) extends SinkNode(MonitorNodeImp)(Seq(width))
+ */
+
 class AdderMonitorNode(width: UpwardParam)(implicit valName: ValName) extends SinkNode(AdderNodeImp)(Seq(width))
 
 class AdderNode(
@@ -105,6 +123,7 @@ class AdderMonitorModule(outer: AdderMonitor) extends LazyModuleImp(outer) {
     val error = Output(Bool())
   })
 
+  printf(outer.nodeSeq.map(node => p"${node.in.head._1}").reduce(_ + p" + " + _) + p"= ${outer.nodeSum.in.head._1}\n")
   io.error := outer.nodeSum.in.head._1.bits =/= outer.nodeSeq.map(_.in.head._1.bits).reduce(_ + _)
   val ports = (outer.nodeSeq.map(_.in.head._1) ++ Seq(outer.nodeSum.in.head._1)).zipWithIndex
   ports.foreach { case (in, i) =>
@@ -136,6 +155,6 @@ class AdderTestHarnessImp(outer: AdderTestHarness) extends LazyModuleImp(outer) 
   outer.drivers(0).module.io.opValid := io.op1Valid
   outer.drivers(1).module.io.opValid := io.op2Valid
   when(outer.monitor.module.io.error) {
-    printf("something went wrong")
+    printf("something went wrong\n")
   }
 }

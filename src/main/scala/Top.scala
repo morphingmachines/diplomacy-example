@@ -102,4 +102,5 @@ object diplomacyExample extends App with LazyToplevel {
   firrtl2sv()
   genDiplomacyGraph()
 
+  showModuleComposition(lazyTop)
 }

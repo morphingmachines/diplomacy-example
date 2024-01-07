@@ -47,6 +47,9 @@ object AdderNodeImp extends SimpleNodeImp[DownwardParam, UpwardParam, EdgeParam,
     *
     * Similarly, Inward Edge parameters (EI) is computed as a function of Downward-flowing parameters received at the
     * input port of the node (DI) and Upward-flowing parameters generated at the input port (UI).
+    *
+    * Note that a node can have multiple inward and outward edges. All edges use the same process to resolve edge
+    * parameters.
     */
   def edge(pd: DownwardParam, pu: UpwardParam, p: Parameters, sourceInfo: SourceInfo) =
     if (pd.width > pu.width) EdgeParam(pu.width) else EdgeParam(pd.width)
@@ -56,6 +59,9 @@ object AdderNodeImp extends SimpleNodeImp[DownwardParam, UpwardParam, EdgeParam,
     *
     * The bundle chisel-type is used as it is for outer side (source end-point) interface. If the interface is at the
     * inner side (sink end-point) then bundle gets automatically "Flipped" to match the IO direction.
+    *
+    * Each edge of the node is associated with an IO interface of Chisel-Type whose parameters are determined by this
+    * function.
     */
   def bundle(e: EdgeParam): UInt = UInt(e.width.W)
 
@@ -73,7 +79,7 @@ object AdderNodeImp extends SimpleNodeImp[DownwardParam, UpwardParam, EdgeParam,
   * output interfaces, we will have two edges coming out of "AdderDriver" connecting to "Adder" and "Monitor".
   *
   * For the two edges connected to the outward-side of this node, we need two values of type DownwardParam, defined as
-  * Seq[DownwardParam] type.
+  * Seq[DownwardParam] type of length 2.
   */
 class AdderDriverNode(widths: Seq[DownwardParam])(implicit valName: ValName) extends SourceNode(AdderNodeImp)(widths)
 
@@ -94,7 +100,8 @@ class AdderDriverNode(widths: Seq[DownwardParam])(implicit valName: ValName) ext
   * connecting "Adder" is the result that must be compared against the value computed using the interfaces associated
   * with "AdderDriver".
   *
-  * In this case "AdderMonitor" module is implemented with three nodes (AdderMonitorNode) each with an edge.
+  * In this case "AdderMonitor" module is implemented with three nodes (AdderMonitorNode) each with an edge. With only
+  * one edge for the node, the sink node's inward upward-flowing parameter is defined as Seq[UpwardParam] of length 1.
   */
 class AdderMonitorNode(width: UpwardParam)(implicit valName: ValName) extends SinkNode(AdderNodeImp)(Seq(width))
 
@@ -128,13 +135,26 @@ class Adder(implicit p: Parameters) extends LazyModule {
     },
   )
   lazy val module = new LazyModuleImp(this) {
-    require(node.in.size >= 2)
+    require(node.in.size >= 2) // The number of inward edges must be greater-than or equal to 2
     node.out.head._1 := node.in.unzip._1.reduce(_ + _)
   }
 
   override lazy val desiredName = "Adder"
 }
 
+/** The module has two output ports, that provides same random int value on both ports.
+  * -> One port drives Adder
+  * -> Other port drives Monitor
+  *
+  * The module is realized with single node. So for two ports the node should have two (outward) edges.
+  *
+  * Note that the parameter passed to AdderDriverNode is of length 2.
+  *
+  * @param width
+  *   Width of the output ports
+  * @param numOutputs
+  *   number of output ports, here it is two.
+  */
 class AdderDriver(width: Int, numOutputs: Int)(implicit p: Parameters) extends LazyModule {
   val node = new AdderDriverNode(Seq.fill(numOutputs)(DownwardParam(width)))
   lazy val module = new LazyModuleImp(this) {
@@ -205,6 +225,6 @@ class AdderTestHarness()(implicit p: Parameters) extends LazyModule {
       printf("something went wrong")
     }
   }
-  override lazy val desiredName: String = "AdderTestHarness"
+  override lazy val desiredName: String = "AdderTestBench"
   println(s"End Test-Harness $p")
 }
