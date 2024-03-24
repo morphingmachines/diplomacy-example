@@ -61,7 +61,7 @@ trait LazyToplevel extends Toplevel {
 
   def showModuleComposition(gen: => LazyModule) = {
     println("List of Diplomatic Nodes (Ports)")
-    gen.getNodes.map(x => println("Class Type: " + x.getClass.getName() + "| Instance (node) name: " + x.name))
+    gen.getNodes.map(x => println(s"Class Type:  ${x.getClass.getName()} | node: ${x.name} (${x.description})"))
     println("")
     println("List of Sub Modules")
     gen.getChildren.map(x => println("Class Type: " + x.getClass.getName() + "| Instance name:" + x.name))
@@ -103,4 +103,9 @@ object diplomacyExample extends App with LazyToplevel {
   genDiplomacyGraph()
 
   showModuleComposition(lazyTop)
+}
+
+
+object SVGenTop extends App {
+  ChiselStage.emitSystemVerilogFile(LazyModule(new example1.AdderTestHarness()(Parameters.empty)).module)
 }

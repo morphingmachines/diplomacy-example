@@ -12,7 +12,7 @@ rtl:## Generates Verilog code from Chisel sources (output to ./generated_sv_dir)
 check: test
 .PHONY: test
 test:## Run Chisel tests
-	$(MILL) $(project).test.testOnly adder.exampletest2.DiplomaticAdder
+	$(MILL) $(project).test.testOnly adder.example2.DiplomaticAdder
 	@echo "If using WriteVcdAnnotation in your tests, the VCD files are generated in ./test_run_dir/testname directories."
 
 .PHONY: lint

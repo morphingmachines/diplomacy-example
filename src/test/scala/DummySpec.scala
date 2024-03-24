@@ -2,8 +2,8 @@ package adder
 
 import chiseltest._
 import freechips.rocketchip.diplomacy.LazyModule
-//import org.chipsalliance.cde.config.Config
-import org.chipsalliance.cde.config.Parameters
+import org.chipsalliance.cde.config.Config
+//import org.chipsalliance.cde.config.Parameters
 import org.scalatest.freespec.AnyFreeSpec
 
 /** This is a trivial example of how to run this Specification: From a terminal shell use:
@@ -16,8 +16,8 @@ class DiplomaticAdder extends AnyFreeSpec with ChiselScalatestTester {
   "Diplomatic Adder must properly negotiate the width parameter" in {
     test(
       LazyModule(
-        //new example5.AdderTestHarness()(new Config(new example5.DiplomacyExampleConfig)) with example5.HasOneNodeMonitor,
-        new example2.AdderTestHarness()(Parameters.empty),
+        new example5.AdderTestHarness()(new Config(new example5.DiplomacyExampleConfig)) with example5.HasOneNodeMonitor,
+        //new example2.AdderTestHarness()(Parameters.empty),
       ).module,
     ).withAnnotations(
       Seq(

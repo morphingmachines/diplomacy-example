@@ -73,7 +73,7 @@ class Adder(implicit p: Parameters) extends LazyModule {
     },
     { case ups: Seq[UpwardParam] =>
       ups.foreach(x => println(s"the width of the $x in ${x.width}"))
-      require(ups.forall(up => up.width == ups.head.width), "outward11, upward adder width must be equivalent")
+      require(ups.forall(up => up.width == ups.head.width), "outward, upward adder width must be equivalent")
       ups.head
     },
   )
