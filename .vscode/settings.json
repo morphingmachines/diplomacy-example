@@ -1,4 +1,5 @@
 {
+    "metals.millScript": "./mill",
     "files.watcherExclude": {
         "**/target": true,
         "**/out": true,
