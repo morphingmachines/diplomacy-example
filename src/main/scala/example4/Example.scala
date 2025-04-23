@@ -157,7 +157,12 @@ class AdderTestHarness(implicit p: Parameters) extends LazyModule {
   val monitor = LazyModule(new AdderMonitor)
   p(NumMonitorNodes) match {
     case 1 => {
-      // CAUTION: reordering the below node binding statements breaks the functional correctness
+
+      /** ! CAUTION: reordering the below node binding statements breaks the functional correctness When number of nodes
+        * in monitor is 1. The same node has 3 ports, 2 for operands and 1 for result. AdderMonitor nodeSeq defines
+        * first two ports as operands and the last port as result. So correctness depends on order of binding. In case
+        * of monitor with 2 or 3 nodes, the ports for operands and result are uniquely determined by node names.
+        */
       drivers.foreach(driver => monitor.nodeSeq.asInstanceOf[AdderMonitorComplexNode] := driver.node)
       monitor.nodeSeq.asInstanceOf[AdderMonitorComplexNode] := adder.node
     }

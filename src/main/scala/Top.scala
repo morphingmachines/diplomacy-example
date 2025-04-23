@@ -105,7 +105,6 @@ object diplomacyExample extends App with LazyToplevel {
   showModuleComposition(lazyTop)
 }
 
-
 object SVGenTop extends App {
   ChiselStage.emitSystemVerilogFile(LazyModule(new example1.AdderTestHarness()(Parameters.empty)).module)
 }
